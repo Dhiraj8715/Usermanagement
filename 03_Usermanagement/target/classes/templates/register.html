@@ -1,0 +1,295 @@
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>User Registration</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 25px 15px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f3c88;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #1f3c88;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #1f3c88;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: #162d65;
+        }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: #c0392b;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #1f3c88;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-container">
+
+        <h2>Create Your Account</h2>
+
+        <!-- Success Message -->
+        <p class="success-message"
+           th:if="${smsg != null}"
+           th:text="${smsg}">
+        </p>
+
+        <!-- Error Message -->
+        <p class="error-message"
+           th:if="${emsg != null}"
+           th:text="${emsg}">
+        </p>
+
+        <form th:action="@{/register}"
+              th:object="${user}"
+              method="post">
+
+            <!-- Name -->
+            <div class="form-group">
+                <label for="uname">Full Name</label>
+                <input type="text"
+                       id="uname"
+                       th:field="*{uname}"
+                       placeholder="Enter your full name"
+                       required>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email"
+                       id="email"
+                       th:field="*{email}"
+                       placeholder="Enter your email"
+                       required>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="pwd">Password</label>
+                <input type="password"
+                       id="pwd"
+                       th:field="*{pwd}"
+                       placeholder="Enter your password"
+                       required>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group">
+                <label for="phno">Phone Number</label>
+                <input type="tel"
+                       id="phno"
+                       th:field="*{phno}"
+                       placeholder="Enter your phone number"
+                       required>
+            </div>
+
+            <!-- Country -->
+            <div class="form-group">
+                <label for="countryId">Country</label>
+                <select id="countryId"
+                        th:field="*{countryId}"
+                        required>
+                    <option value="">-- Select Country --</option>
+
+                    <option th:each="country : ${countries}"
+                            th:value="${country.key}"
+                            th:text="${country.value}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- State -->
+            <div class="form-group">
+                <label for="stateId">State</label>
+                <select id="stateId"
+                        th:field="*{stateId}"
+                        required>
+                    <option value="">-- Select State --</option>
+                </select>
+            </div>
+
+            <!-- City -->
+            <div class="form-group">
+                <label for="cityId">City</label>
+                <select id="cityId"
+                        th:field="*{cityId}"
+                        required>
+                    <option value="">-- Select City --</option>
+                </select>
+            </div>
+
+            <!-- Register Button -->
+            <button type="submit">Register</button>
+
+        </form>
+
+        <div class="login-link">
+            Already have an account?
+            <a th:href="@{/}">Login Here</a>
+        </div>
+
+    </div>
+
+    <!-- Country -> State -> City Dropdown JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const countrySelect = document.getElementById("countryId");
+            const stateSelect = document.getElementById("stateId");
+            const citySelect = document.getElementById("cityId");
+
+            // Load states when country changes
+            countrySelect.addEventListener("change", function () {
+
+                stateSelect.innerHTML =
+                    '<option value="">-- Select State --</option>';
+
+                citySelect.innerHTML =
+                    '<option value="">-- Select City --</option>';
+
+                if (!this.value) {
+                    return;
+                }
+
+                fetch("/states?countryId=" + encodeURIComponent(this.value))
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to load states");
+                        }
+                        return response.json();
+                    })
+                    .then(states => {
+                        Object.entries(states).forEach(([id, name]) => {
+                            stateSelect.add(new Option(name, id));
+                        });
+                    })
+                    .catch(error => {
+                        console.error("States loading failed:", error);
+                    });
+            });
+
+            // Load cities when state changes
+            stateSelect.addEventListener("change", function () {
+
+                citySelect.innerHTML =
+                    '<option value="">-- Select City --</option>';
+
+                if (!this.value) {
+                    return;
+                }
+
+                fetch("/cities?StatesId=" + encodeURIComponent(this.value))
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to load cities");
+                        }
+                        return response.json();
+                    })
+                    .then(cities => {
+                        Object.entries(cities).forEach(([id, name]) => {
+                            citySelect.add(new Option(name, id));
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Cities loading failed:", error);
+                    });
+            });
+
+        });
+    </script>
+
+</body>
+</html>
+```

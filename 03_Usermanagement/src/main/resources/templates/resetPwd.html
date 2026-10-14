@@ -1,0 +1,180 @@
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reset Password</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .reset-container {
+            width: 100%;
+            max-width: 430px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f3c88;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1f3c88;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1f3c88;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #162d65;
+        }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: #c0392b;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #1f3c88;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="reset-container">
+
+        <h2>Reset Your Password</h2>
+
+        <!-- Success Message -->
+        <p class="success-message"
+           th:if="${smsg != null}"
+           th:text="${smsg}">
+        </p>
+
+        <!-- Error Message -->
+        <p class="error-message"
+           th:if="${emsg != null}"
+           th:text="${emsg}">
+        </p>
+
+        <form th:action="@{/resetPwd}"
+              th:object="${resetpwd}"
+              method="post">
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email"
+                       id="email"
+                       th:field="*{email}"
+                       placeholder="Enter your registered email"
+                       required>
+            </div>
+
+            <!-- Old Password -->
+            <div class="form-group">
+                <label for="oldPwd">Old Password</label>
+                <input type="password"
+                       id="oldPwd"
+                       th:field="*{oldPwd}"
+                       placeholder="Enter your old password"
+                       required>
+            </div>
+
+            <!-- New Password -->
+            <div class="form-group">
+                <label for="newPwd">New Password</label>
+                <input type="password"
+                       id="newPwd"
+                       th:field="*{newPwd}"
+                       placeholder="Enter your new password"
+                       required>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="confirmPwd">Confirm New Password</label>
+                <input type="password"
+                       id="confirmPwd"
+                       th:field="*{confirmPwd}"
+                       placeholder="Confirm your new password"
+                       required>
+            </div>
+
+            <button type="submit">Update Password</button>
+
+        </form>
+
+        <div class="login-link">
+            <a th:href="@{/}">Back to Login</a>
+        </div>
+
+    </div>
+
+</body>
+</html>
+```
